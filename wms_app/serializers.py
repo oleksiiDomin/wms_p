@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from wms_app.models import Seller, Customer, Coil, Calcium, CalciumSilicon, Carbon, Order, MetalStrip, MetalShot, \
-    IncludedMaterial, Material
+    IncludedMaterial, Material, CustomerCoilRelation
 
 
 class MaterialSerializer(ModelSerializer):
@@ -95,3 +95,9 @@ class CustomerSerializer(ModelSerializer):
 
     def get_orders_count(self, obj):
          return Order.objects.filter(customer = obj).count()
+
+
+class CustomerCoilRelationSerializer(ModelSerializer):
+    class Meta:
+        model = CustomerCoilRelation
+        fields = ('customer', 'coil', 'feedback')

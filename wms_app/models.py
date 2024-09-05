@@ -168,6 +168,14 @@ class IncludedMaterial(Model):
             self.material.save()
         super().save(*args, **kwargs)
 
+    def update(self, instance, validated_data):
+        if self.material.current_balance < 0:
+            raise ValueError(f"Insufficient balance for {self.material.lot}")
+        if self.material.current_balance < 12100:
+            print(f'Attention!: Low count of balance. Current balance: {self.material.current_balance}')
+
+        super().update(instance, validated_data)
+
 def send_low_stock_email(material):
     subject = f"Low Stock Alert: {material.lot}"
     message = f"The stock for {material.lot} is low. Only {material.current_balance} units left."
@@ -176,38 +184,16 @@ def send_low_stock_email(material):
 
 
 
+class CustomerCoilRelation(Model):
+    user = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    coil = models.ForeignKey(Coil, on_delete=models.CASCADE)
+    like = models.BooleanField()
+    feedback = models.CharField(max_length=1000)
 
-
-
-
-
-
-
-
-
-
-
-
-    # def update(self, instance, validated_data):
-    #     if self.material.current_balance < 0:
-    #         raise ValueError(f"Insufficient balance for {self.material.name}")
-    #     if self.material.current_balance < 12100:
-    #         print(f'ПРЕДУПРЕЖДЕНИЕ! НИЗКИЙ ОСТАТОК МАТЕРИАЛА! ТЕКУЩИЙ ОСТАТОК: {self.material.current_balance}')
-    #
-    #     super().update(instance, validated_data)
-
-
-
-# class UserCoilRelation(Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     coil = models.ForeignKey(Coil, on_delete=models.CASCADE)
-#     like = models.BooleanField()
-#     feedback = models.CharField(max_length=1000)
-#
-#     RATE_CHOICES = (
-#         (1, 'Terrible'),
-#         (2, 'Bad'),
-#         (3, 'Norman'),
-#         (4, 'Good'),
-#         (5, 'Excellent')
-#     )
+    RATE_CHOICES = (
+        (1, 'Terrible'),
+        (2, 'Bad'),
+        (3, 'Norman'),
+        (4, 'Good'),
+        (5, 'Excellent')
+    )
